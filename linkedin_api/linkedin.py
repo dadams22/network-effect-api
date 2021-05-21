@@ -26,6 +26,11 @@ logger = logging.getLogger(__name__)
 
 
 def default_evade():
+    """Have no evade strategy by default"""
+    pass
+
+
+def sleep_evade():
     """
     A catch-all method to try and evade suspension from Linkedin.
     Currenly, just delays the request by a random (bounded) time
