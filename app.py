@@ -14,7 +14,19 @@ def create_linkedin_instance():
 @app.route('/profile', methods=['POST'])
 def get_profile():
     linkedin = create_linkedin_instance()
-    return linkedin.get_user_profile()
+    user_profile = linkedin.get_user_profile()
+    public_id = user_profile['miniProfile']['publicIdentifier']
+    profile = linkedin.get_profile(public_id)
+    return profile
+
+
+@app.route('/connections', methods=['POST'])
+def get_connections():
+    linkedin = create_linkedin_instance()
+    user_profile = linkedin.get_user_profile()
+    public_id = user_profile['miniProfile']['publicIdentifier']
+    connections = linkedin.get_profile_connections(public_id)
+    return {'connections': connections}
 
 
 if __name__ == '__main__':
