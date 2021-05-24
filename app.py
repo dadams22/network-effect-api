@@ -1,3 +1,5 @@
+import json
+
 from flask import Flask, request
 from linkedin_api import Linkedin
 
@@ -24,8 +26,8 @@ def get_profile():
 def get_connections():
     linkedin = create_linkedin_instance()
     user_profile = linkedin.get_user_profile()
-    public_id = user_profile['miniProfile']['publicIdentifier']
-    connections = linkedin.get_profile_connections(public_id)
+    public_id = user_profile['plainId']
+    connections = linkedin.get_profile_connections(public_id, detailed_profile=True)
     return {'connections': connections}
 
 

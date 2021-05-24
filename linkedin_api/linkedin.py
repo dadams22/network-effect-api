@@ -183,6 +183,7 @@ class Linkedin(object):
         keyword_school=None,
         network_depth=None,  # DEPRECATED - use network_depths
         title=None,  # DEPRECATED - use keyword_title
+        detailed_profile=False, # If true, will scrape the full profile of each person that appeared in the search
         **kwargs,
     ):
         """Perform a LinkedIn search for people.
@@ -282,6 +283,11 @@ class Linkedin(object):
                     "tracking_id": get_id_from_urn(item.get("trackingUrn")),
                 }
             )
+
+        if detailed_profile:
+            for user in results:
+                profile = self.get_profile(user['public_id'])
+                user['profile'] = profile
 
         return results
 
@@ -602,7 +608,7 @@ class Linkedin(object):
 
         return profile
 
-    def get_profile_connections(self, urn_id):
+    def get_profile_connections(self, urn_id, detailed_profile=False):
         """Fetch first-degree connections for a given LinkedIn profile.
 
         :param urn_id: LinkedIn URN ID for a profile
@@ -611,7 +617,7 @@ class Linkedin(object):
         :return: List of search results
         :rtype: list
         """
-        return self.search_people(connection_of=urn_id, network_depth="F")
+        return self.search_people(connection_of=urn_id, network_depth="F", detailed_profile=detailed_profile)
 
     def get_company_updates(
         self, public_id=None, urn_id=None, max_results=None, results=[]
