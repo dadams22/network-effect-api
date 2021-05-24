@@ -1,5 +1,3 @@
-import json
-
 from flask import Flask, request
 from linkedin_api import Linkedin
 
