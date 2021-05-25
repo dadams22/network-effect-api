@@ -501,7 +501,17 @@ class Linkedin(object):
 
         return skills
 
-    def get_profile(self, public_id=None, urn_id=None):
+    def get_profile(self,
+                    public_id=None,
+                    urn_id=None,
+                    get_experience=False,
+                    get_education=False,
+                    get_languages=False,
+                    get_publications=False,
+                    get_certifications=False,
+                    get_volunteer=False,
+                    get_honors=False
+                    ):
         """Fetch data for a given LinkedIn profile.
 
         :param public_id: LinkedIn public ID for a profile
@@ -541,66 +551,73 @@ class Linkedin(object):
         del profile["versionTag"]
         del profile["showEducationOnProfileTopCard"]
 
-        # massage [experience] data
-        experience = data["positionView"]["elements"]
-        for item in experience:
-            if "company" in item and "miniCompany" in item["company"]:
-                if "logo" in item["company"]["miniCompany"]:
-                    logo = item["company"]["miniCompany"]["logo"].get(
-                        "com.linkedin.common.VectorImage"
-                    )
-                    if logo:
-                        item["companyLogoUrl"] = logo["rootUrl"]
-                del item["company"]["miniCompany"]
-            del item["entityUrn"]
+        if get_experience:
+            # massage [experience] data
+            experience = data["positionView"]["elements"]
+            for item in experience:
+                if "company" in item and "miniCompany" in item["company"]:
+                    if "logo" in item["company"]["miniCompany"]:
+                        logo = item["company"]["miniCompany"]["logo"].get(
+                            "com.linkedin.common.VectorImage"
+                        )
+                        if logo:
+                            item["companyLogoUrl"] = logo["rootUrl"]
+                    del item["company"]["miniCompany"]
+                del item["entityUrn"]
 
-        profile["experience"] = experience
+            profile["experience"] = experience
 
-        # massage [education] data
-        education = data["educationView"]["elements"]
-        for item in education:
-            if "school" in item:
-                if "logo" in item["school"]:
-                    item["school"]["logoUrl"] = item["school"]["logo"][
-                        "com.linkedin.common.VectorImage"
-                    ]["rootUrl"]
-                    del item["school"]["logo"]
-                    del item["school"]["entityUrn"]
-            del item["entityUrn"]
+        if get_education:
+            # massage [education] data
+            education = data["educationView"]["elements"]
+            for item in education:
+                if "school" in item:
+                    if "logo" in item["school"]:
+                        item["school"]["logoUrl"] = item["school"]["logo"][
+                            "com.linkedin.common.VectorImage"
+                        ]["rootUrl"]
+                        del item["school"]["logo"]
+                        del item["school"]["entityUrn"]
+                del item["entityUrn"]
 
-        profile["education"] = education
+            profile["education"] = education
 
-        # massage [languages] data
-        languages = data["languageView"]["elements"]
-        for item in languages:
-            del item["entityUrn"]
-        profile["languages"] = languages
+        if get_languages:
+            # massage [languages] data
+            languages = data["languageView"]["elements"]
+            for item in languages:
+                del item["entityUrn"]
+            profile["languages"] = languages
 
-        # massage [publications] data
-        publications = data["publicationView"]["elements"]
-        for item in publications:
-            del item["entityUrn"]
-            for author in item.get("authors", []):
-                del author["entityUrn"]
-        profile["publications"] = publications
+        if get_publications:
+            # massage [publications] data
+            publications = data["publicationView"]["elements"]
+            for item in publications:
+                del item["entityUrn"]
+                for author in item.get("authors", []):
+                    del author["entityUrn"]
+            profile["publications"] = publications
 
-        # massage [certifications] data
-        certifications = data["certificationView"]["elements"]
-        for item in certifications:
-            del item["entityUrn"]
-        profile["certifications"] = certifications
+        if get_certifications:
+            # massage [certifications] data
+            certifications = data["certificationView"]["elements"]
+            for item in certifications:
+                del item["entityUrn"]
+            profile["certifications"] = certifications
 
-        # massage [volunteer] data
-        volunteer = data["volunteerExperienceView"]["elements"]
-        for item in volunteer:
-            del item["entityUrn"]
-        profile["volunteer"] = volunteer
+        if get_volunteer:
+            # massage [volunteer] data
+            volunteer = data["volunteerExperienceView"]["elements"]
+            for item in volunteer:
+                del item["entityUrn"]
+            profile["volunteer"] = volunteer
 
-        # massage [honors] data
-        honors = data["honorView"]["elements"]
-        for item in honors:
-            del item["entityUrn"]
-        profile["honors"] = honors
+        if get_honors:
+            # massage [honors] data
+            honors = data["honorView"]["elements"]
+            for item in honors:
+                del item["entityUrn"]
+            profile["honors"] = honors
 
         return profile
 
