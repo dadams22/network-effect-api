@@ -184,7 +184,7 @@ class Linkedin(object):
             keyword_school=None,
             network_depth=None,  # DEPRECATED - use network_depths
             title=None,  # DEPRECATED - use keyword_title
-            detailed_profile=False,  # If true, will scrape the full profile of each person that appeared in the search
+            details=[],
             **kwargs,
     ):
         """Perform a LinkedIn search for people.
@@ -285,9 +285,9 @@ class Linkedin(object):
                 }
             )
 
-        if detailed_profile:
+        if details:
             for user in results:
-                profile = self.get_profile(user['public_id'])
+                profile = self.get_profile(user['public_id'], details=details)
                 user['profile'] = profile
 
         return results
@@ -501,17 +501,7 @@ class Linkedin(object):
 
         return skills
 
-    def get_profile(self,
-                    public_id=None,
-                    urn_id=None,
-                    get_experience=False,
-                    get_education=False,
-                    get_languages=False,
-                    get_publications=False,
-                    get_certifications=False,
-                    get_volunteer=False,
-                    get_honors=False
-                    ):
+    def get_profile(self, public_id=None, urn_id=None, details=[]):
         """Fetch data for a given LinkedIn profile.
 
         :param public_id: LinkedIn public ID for a profile
@@ -551,7 +541,7 @@ class Linkedin(object):
         del profile["versionTag"]
         del profile["showEducationOnProfileTopCard"]
 
-        if get_experience:
+        if 'experience' in details:
             # massage [experience] data
             experience = data["positionView"]["elements"]
             for item in experience:
@@ -567,7 +557,7 @@ class Linkedin(object):
 
             profile["experience"] = experience
 
-        if get_education:
+        if 'education' in details:
             # massage [education] data
             education = data["educationView"]["elements"]
             for item in education:
@@ -582,14 +572,14 @@ class Linkedin(object):
 
             profile["education"] = education
 
-        if get_languages:
+        if 'languages' in details:
             # massage [languages] data
             languages = data["languageView"]["elements"]
             for item in languages:
                 del item["entityUrn"]
             profile["languages"] = languages
 
-        if get_publications:
+        if 'publications' in details:
             # massage [publications] data
             publications = data["publicationView"]["elements"]
             for item in publications:
@@ -598,21 +588,21 @@ class Linkedin(object):
                     del author["entityUrn"]
             profile["publications"] = publications
 
-        if get_certifications:
+        if 'certifications' in details:
             # massage [certifications] data
             certifications = data["certificationView"]["elements"]
             for item in certifications:
                 del item["entityUrn"]
             profile["certifications"] = certifications
 
-        if get_volunteer:
+        if 'volunteer' in details:
             # massage [volunteer] data
             volunteer = data["volunteerExperienceView"]["elements"]
             for item in volunteer:
                 del item["entityUrn"]
             profile["volunteer"] = volunteer
 
-        if get_honors:
+        if 'honors' in details:
             # massage [honors] data
             honors = data["honorView"]["elements"]
             for item in honors:
@@ -621,7 +611,7 @@ class Linkedin(object):
 
         return profile
 
-    def get_profile_connections(self, urn_id, detailed_profile=False):
+    def get_profile_connections(self, urn_id, details=[]):
         """Fetch first-degree connections for a given LinkedIn profile.
 
         :param urn_id: LinkedIn URN ID for a profile
@@ -630,7 +620,7 @@ class Linkedin(object):
         :return: List of search results
         :rtype: list
         """
-        return self.search_people(connection_of=urn_id, network_depth="F", detailed_profile=detailed_profile)
+        return self.search_people(connection_of=urn_id, network_depth="F", details=details)
 
     def get_company_updates(
             self, public_id=None, urn_id=None, max_results=None, results=[]

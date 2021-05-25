@@ -16,7 +16,7 @@ def get_profile():
     linkedin = create_linkedin_instance()
     user_profile = linkedin.get_user_profile()
     public_id = user_profile['miniProfile']['publicIdentifier']
-    profile = linkedin.get_profile(public_id)
+    profile = linkedin.get_profile(public_id, details=['experience', 'education'])
     return profile
 
 
@@ -25,7 +25,7 @@ def get_connections():
     linkedin = create_linkedin_instance()
     user_profile = linkedin.get_user_profile()
     public_id = user_profile['plainId']
-    connections = linkedin.get_profile_connections(public_id, detailed_profile=True)
+    connections = linkedin.get_profile_connections(public_id, details=['experience', 'education'])
     return {'connections': connections}
 
 
